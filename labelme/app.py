@@ -345,6 +345,37 @@ class MainWindow(QtWidgets.QMainWindow):
             enabled=False,
         )
 
+        filterList = []
+
+        for color in ['R', 'G', 'B']:
+            colorAction = action(
+                text='Color Filter %s' % color,
+                slot=functools.partial(self.colorFilter, color, 0.2),
+                tip='Color Filter %s' % color,
+                enabled=True,
+            )
+
+            filterList.append(colorAction)
+
+        for perc in range(25, 125, 25):
+            bfAction = action(
+                text='Brightness Filter %d' % perc,
+                slot=functools.partial(self.adjustBrightness, perc),
+                tip='Adjusts Brightness',
+                enabled=True,
+            )
+
+            filterList.append(bfAction)
+
+        resetFilters = action(
+            text='Reset Filters',
+            slot=self.resetFilters,
+            tip='Resets all applied filters',
+            enabled=True,
+        )
+
+        filterList.append(resetFilters)
+
         undo = action(self.tr('Undo'), self.undoShapeEdit,
                       shortcuts['undo'], 'undo',
                       self.tr('Undo last add and edit of shape'),
@@ -507,6 +538,7 @@ class MainWindow(QtWidgets.QMainWindow):
             file=self.menu(self.tr('&File')),
             edit=self.menu(self.tr('&Edit')),
             view=self.menu(self.tr('&View')),
+            filter=self.menu(self.tr('&Filter')),
             help=self.menu(self.tr('&Help')),
             recentFiles=QtWidgets.QMenu(self.tr('Open &Recent')),
             labelList=labelMenu,
@@ -532,6 +564,12 @@ class MainWindow(QtWidgets.QMainWindow):
             ),
         )
         utils.addActions(self.menus.help, (help,))
+        utils.addActions(
+            self.menus.filter,
+            (
+                filterList
+            ),
+        )
         utils.addActions(
             self.menus.view,
             (
@@ -654,6 +692,31 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.firstStart = True
         # if self.firstStart:
         #    QWhatsThis.enterWhatsThisMode()
+
+
+    def adjustBrightness(self, perc):
+        adjImage = utils.imgAdjustBrightness(self.image_pil, self.imagePath, perc)
+        img = QtGui.QImage.fromData(adjImage)
+        
+        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
+        self.paintCanvas()
+        self.canvas.loadShapes([item.shape() for item in self.labelList])
+
+    def colorFilter(self, color, alpha):
+        filtImage = utils.colorFilter(self.image_pil, self.imagePath, color, alpha)
+        img = QtGui.QImage.fromData(filtImage)
+        
+        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
+        self.paintCanvas()
+        self.canvas.loadShapes([item.shape() for item in self.labelList])
+
+    def resetFilters(self):
+        resetImage = utils.streamImageAsIO(self.image_pil, self.imagePath)
+        img = QtGui.QImage.fromData(resetImage)
+        
+        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
+        self.paintCanvas()
+        self.canvas.loadShapes([item.shape() for item in self.labelList])
 
     def menu(self, title, actions=None):
         menu = self.menuBar().addMenu(title)
@@ -1292,6 +1355,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.imageData:
                 self.imagePath = filename
             self.labelFile = None
+
+        self.image_pil = utils.loadImage(self.imagePath)
         image = QtGui.QImage.fromData(self.imageData)
 
         if image.isNull():

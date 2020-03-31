@@ -23,3 +23,9 @@ from .qt import struct
 from .qt import distance
 from .qt import distancetoline
 from .qt import fmtShortcut
+
+from .imagepreprocessing import imgAdjustBrightness
+from .imagepreprocessing import loadImage
+from .imagepreprocessing import imgAdjustColor
+from .imagepreprocessing import colorFilter
+from .imagepreprocessing import streamImageAsIO
