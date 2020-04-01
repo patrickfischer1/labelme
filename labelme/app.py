@@ -347,33 +347,157 @@ class MainWindow(QtWidgets.QMainWindow):
 
         filterList = []
 
-        for color in ['R', 'G', 'B']:
-            colorAction = action(
-                text='Color Filter %s' % color,
-                slot=functools.partial(self.colorFilter, color, 0.2),
-                tip='Color Filter %s' % color,
-                enabled=True,
-            )
+        # for color in ['R', 'G', 'B']:
+        #     colorAction = action(
+        #         text='Color Filter %s' % color,
+        #         slot=functools.partial(self.colorFilter, color, 0.2),
+        #         tip='Color Filter %s' % color,
+        #         enabled=True,
+        #     )
 
-            filterList.append(colorAction)
+        #     filterList.append(colorAction)
 
-        for perc in range(25, 125, 25):
-            bfAction = action(
-                text='Brightness Filter %d' % perc,
-                slot=functools.partial(self.adjustBrightness, perc),
-                tip='Adjusts Brightness',
-                enabled=True,
-            )
+        # for perc in range(25, 125, 25):
+        #     bfAction = action(
+        #         text='Brightness Filter %d' % perc,
+        #         slot=functools.partial(self.adjustBrightness, perc),
+        #         tip='Adjusts Brightness',
+        #         enabled=True,
+        #     )
 
-            filterList.append(bfAction)
+        #     filterList.append(bfAction)
+
+        redLowtoneEnhance = action(
+            text='Enhances red lowtones',
+            slot=functools.partial(self.colorFilter, 'R', [0, 0.3, 0.45, 0.6, 0.8, 1.0]),
+            enabled=True
+        )
+        redLowtoneReduce = action(
+            text='Reduces red lowtones',
+            slot=functools.partial(self.colorFilter, 'R', [0, 0.1, 0.35, 0.55, 0.7, 1.0]),
+            enabled=True
+        )
+
+        greenLowtoneEnhance = action(
+            text='Enhances green lowtones',
+            slot=functools.partial(self.colorFilter, 'G', [0, 0.3, 0.45, 0.6, 0.8, 1.0]),
+            enabled=True
+        )
+        greenLowtoneReduce = action(
+            text='Reduces green lowtones',
+            slot=functools.partial(self.colorFilter, 'G', [0, 0.1, 0.35, 0.55, 0.7, 1.0]),
+            enabled=True
+        )
+
+        blueLowtoneEnhance = action(
+            text='Enhances blue lowtones',
+            slot=functools.partial(self.colorFilter, 'B', [0, 0.3, 0.45, 0.6, 0.8, 1.0]),
+            enabled=True
+        )
+        blueLowtoneReduce = action(
+            text='Reduces blue lowtones',
+            slot=functools.partial(self.colorFilter, 'B', [0, 0.1, 0.35, 0.55, 0.7, 1.0]),
+            enabled=True
+        )
+
+        redMidtoneEnhance = action(
+            text='Enhance red midtones',
+            slot=functools.partial(self.colorFilter, 'R', [0, 0.2, 0.5, 0.7, 0.8, 1.0]),
+            enabled=True
+        )
+        redMidtoneReduce = action(
+            text='Reduces red midtones',
+            slot=functools.partial(self.colorFilter, 'R', [0, 0.2, 0.3, 0.5, 0.8, 1.0]),
+            enabled=True
+        )
+
+        greenMidtoneEnhance = action(
+            text='Enhance green midtones',
+            slot=functools.partial(self.colorFilter, 'G', [0, 0.2, 0.5, 0.7, 0.8, 1.0]),
+            enabled=True
+        )
+        greenMidtoneReduce = action(
+            text='Reduces green midtones',
+            slot=functools.partial(self.colorFilter, 'G', [0, 0.2, 0.3, 0.5, 0.8, 1.0]),
+            enabled=True
+        )
+
+        blueMidtoneEnhance = action(
+            text='Enhance blue midtones',
+            slot=functools.partial(self.colorFilter, 'B', [0, 0.2, 0.5, 0.7, 0.8, 1.0]),
+            enabled=True
+        )
+        blueMidtoneReduce = action(
+            text='Reduces blue midtones',
+            slot=functools.partial(self.colorFilter, 'B', [0, 0.2, 0.3, 0.5, 0.8, 1.0]),
+            enabled=True
+        )
+
+        redHightoneEnhance = action(
+            text='Enhance red hightones',
+            slot=functools.partial(self.colorFilter, 'R', [0, 0.2, 0.4, 0.65, 0.9, 1.0]),
+            enabled=True
+        )
+        redHightoneReduce = action(
+            text='Reduces red hightones',
+            slot=functools.partial(self.colorFilter, 'R', [0, 0.2, 0.4, 0.55, 0.7, 1.0]),
+            enabled=True
+        )
+
+        greenHightoneEnhance = action(
+            text='Enhance green hightones',
+            slot=functools.partial(self.colorFilter, 'G', [0, 0.2, 0.4, 0.65, 0.9, 1.0]),
+            enabled=True
+        )
+        greenHightoneReduce = action(
+            text='Reduces green hightones',
+            slot=functools.partial(self.colorFilter, 'G', [0, 0.2, 0.4, 0.55, 0.7, 1.0]),
+            enabled=True
+        )
+
+        blueHightoneEnhance = action(
+            text='Enhance blue hightones',
+            slot=functools.partial(self.colorFilter, 'B', [0, 0.2, 0.4, 0.65, 0.9, 1.0]),
+            enabled=True
+        )
+        blueHightoneReduce = action(
+            text='Reduces blue hightones',
+            slot=functools.partial(self.colorFilter, 'B', [0, 0.2, 0.4, 0.55, 0.7, 1.0]),
+            enabled=True
+        )
+
+        sharpen = action(
+            text='Sharpen image',
+            slot=functools.partial(self.sharpen, 1.3, 0.3),
+            enabled=True
+        )
 
         resetFilters = action(
             text='Reset Filters',
             slot=self.resetFilters,
             tip='Resets all applied filters',
-            enabled=True,
+            enabled=True
         )
 
+        filterList.append(redLowtoneEnhance)
+        filterList.append(redLowtoneReduce)
+        filterList.append(greenLowtoneEnhance)
+        filterList.append(greenLowtoneReduce)
+        filterList.append(blueLowtoneEnhance)
+        filterList.append(blueLowtoneReduce)
+        filterList.append(redMidtoneEnhance)
+        filterList.append(redMidtoneReduce)
+        filterList.append(greenMidtoneEnhance)
+        filterList.append(greenMidtoneReduce)
+        filterList.append(blueMidtoneEnhance)
+        filterList.append(blueMidtoneReduce)
+        filterList.append(redHightoneEnhance)
+        filterList.append(redHightoneReduce)
+        filterList.append(greenHightoneEnhance)
+        filterList.append(greenHightoneReduce)
+        filterList.append(blueHightoneEnhance)
+        filterList.append(blueHightoneReduce)
+        filterList.append(sharpen)
         filterList.append(resetFilters)
 
         undo = action(self.tr('Undo'), self.undoShapeEdit,
@@ -694,16 +818,16 @@ class MainWindow(QtWidgets.QMainWindow):
         #    QWhatsThis.enterWhatsThisMode()
 
 
-    def adjustBrightness(self, perc):
-        adjImage = utils.imgAdjustBrightness(self.image_pil, self.imagePath, perc)
+    def sharpen(self, a, b):
+        adjImage = utils.sharpen(self.image_pil, self.imagePath, a, b)
         img = QtGui.QImage.fromData(adjImage)
         
         self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
         self.paintCanvas()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
 
-    def colorFilter(self, color, alpha):
-        filtImage = utils.colorFilter(self.image_pil, self.imagePath, color, alpha)
+    def colorFilter(self, color, values):
+        filtImage = utils.adjustChannel(self.image_pil, self.imagePath, color, values)
         img = QtGui.QImage.fromData(filtImage)
         
         self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))

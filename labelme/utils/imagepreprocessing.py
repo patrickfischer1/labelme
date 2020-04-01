@@ -6,41 +6,48 @@ from labelme import PY2
 from labelme import QT4
 from labelme import utils
 
+from scipy.ndimage.filters import gaussian_filter
+
 from PIL import Image, ImageEnhance, ImageQt, ImageChops
+
+COLORSPACE_ORDER = ['R', 'G', 'B']
 
 def loadImage(filepath):
     image_pil = Image.open(filepath)
     return image_pil
 
-def imgAdjustBrightness(image, filename, perc):
-    enhancer = ImageEnhance.Brightness(image)
-    pilimg = enhancer.enhance(perc / 100.0)
+def sharpen(image, filename, a, b, sigma=10):
+    image = image.convert('RGB')
 
-    return streamImageAsIO(pilimg, filename)
+    np_image = np.array(image)
+    np_image = np_image / 255
 
-def imgAdjustColor(image, filename, perc):
-    enhancer = ImageEnhance.Color(image)
-    pilimg = enhancer.enhance(perc / 100.0)
+    blurred = gaussian_filter(np_image, sigma=sigma)
+    sharper = np.clip(np_image * a - blurred * b, 0, 1.0)
+    np_image = sharper * 255
 
-    return streamImageAsIO(pilimg, filename)    
+    image_filtered = Image.fromarray(np_image.astype('uint8'), 'RGB')
 
-def colorFilter(image, filename, color, alpha):
-    if color == 'R':
-        color_rgb = (255, 255 * (1 - alpha), 255 * (1 - alpha))   
-    elif color == 'G':
-        color_rgb = (255 * (1 - alpha), 255, 255 * (1 - alpha))
-    else:
-        color_rgb = (255 * (1 - alpha), 255 * (1 - alpha), 255)
+    return streamImageAsIO(image_filtered, filename)
 
-    img_array = np.full((image.size[1], image.size[0], 3), color_rgb, np.uint8)
-    blend_image = Image.fromarray(img_array, 'RGB')
+def adjustChannel(image, filename, color, values):
+    image = image.convert('RGB')
 
-    image = image.convert('RGBA')
-    blend_image = blend_image.convert('RGBA')
+    np_image = np.array(image)
+    np_image = np_image / 255
 
-    image = ImageChops.multiply(image, blend_image)
+    channel = np_image[:, :, COLORSPACE_ORDER.index(color)]
 
-    return streamImageAsIO(image, filename)
+    orig_size = channel.shape
+    flat_channel = channel.flatten()
+    adjusted = np.interp(flat_channel, np.linspace(0, 1, len(values)), values)
+
+    np_image[:, :, COLORSPACE_ORDER.index(color)] = adjusted.reshape(orig_size)
+    np_image = np_image * 255
+
+    image_filtered = Image.fromarray(np_image.astype('uint8'), 'RGB')
+
+    return streamImageAsIO(image_filtered, filename)
 
 def streamImageAsIO(image, filename):
     with io.BytesIO() as f:

@@ -24,8 +24,7 @@ from .qt import distance
 from .qt import distancetoline
 from .qt import fmtShortcut
 
-from .imagepreprocessing import imgAdjustBrightness
+from .imagepreprocessing import sharpen
 from .imagepreprocessing import loadImage
-from .imagepreprocessing import imgAdjustColor
-from .imagepreprocessing import colorFilter
+from .imagepreprocessing import adjustChannel
 from .imagepreprocessing import streamImageAsIO
