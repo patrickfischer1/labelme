@@ -25,21 +25,21 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
+    [],
+    exclude_binaries=True,
     name='labelme',
     debug=False,
+    bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    runtime_tmpdir=None,
     console=False,
     icon='labelme/icons/icon.ico',
 )
-app = BUNDLE(
-    exe,
-    name='labelme.app',
-    icon='labelme/icons/icon.icns',
-    bundle_identifier=None,
-    info_plist={'NSHighResolutionCapable': 'True'},
-)
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=False,
+               upx=True,
+               upx_exclude=[],
+               name='labelme')

@@ -819,26 +819,25 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def sharpen(self, a, b):
-        adjImage = utils.sharpen(self.image_pil, self.imagePath, a, b)
-        img = QtGui.QImage.fromData(adjImage)
+        adjImage = utils.sharpen(self.image, self.imagePath, a, b)
+        self.image = adjImage
         
-        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
+        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(self.image))
         self.paintCanvas()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
 
     def colorFilter(self, color, values):
-        filtImage = utils.adjustChannel(self.image_pil, self.imagePath, color, values)
-        img = QtGui.QImage.fromData(filtImage)
+        filtImage = utils.adjustChannel(self.image, self.imagePath, color, values)
+        self.image = filtImage
         
-        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
+        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(self.image))
         self.paintCanvas()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
 
     def resetFilters(self):
-        resetImage = utils.streamImageAsIO(self.image_pil, self.imagePath)
-        img = QtGui.QImage.fromData(resetImage)
+        self.image = QtGui.QImage.fromData(self.imageData)
         
-        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
+        self.canvas.loadPixmap(QtGui.QPixmap.fromImage(self.image))
         self.paintCanvas()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
 
@@ -1480,7 +1479,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.imagePath = filename
             self.labelFile = None
 
-        self.image_pil = utils.loadImage(self.imagePath)
         image = QtGui.QImage.fromData(self.imageData)
 
         if image.isNull():

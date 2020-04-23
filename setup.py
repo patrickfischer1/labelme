@@ -34,6 +34,8 @@ def get_install_requires():
         'PyYAML',
         'qtpy',
         'termcolor',
+        'scipy',
+        'qimage2ndarray'
     ]
 
     # Find python binding for qt with priority:
