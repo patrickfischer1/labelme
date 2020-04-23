@@ -11,7 +11,7 @@
 .idea/
 
 venv/*
-venv
+venv/
 
 .vscode*
 .vscode/*
