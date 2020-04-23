@@ -63,6 +63,7 @@ class LabelFile(object):
             'flags',   # image level flags
             'imageHeight',
             'imageWidth',
+            'filters',
         ]
         shape_keys = [
             'label',
@@ -117,6 +118,8 @@ class LabelFile(object):
                 )
                 for s in data['shapes']
             ]
+
+            filters = data.get('filters')
         except Exception as e:
             raise LabelFileError(e)
 
@@ -132,6 +135,7 @@ class LabelFile(object):
         self.imageData = imageData
         self.filename = filename
         self.otherData = otherData
+        self.appliedFilters = filters
 
     @staticmethod
     def _check_image_height_and_width(imageData, imageHeight, imageWidth):
@@ -160,6 +164,7 @@ class LabelFile(object):
         imageData=None,
         otherData=None,
         flags=None,
+        filters=None
     ):
         if imageData is not None:
             imageData = base64.b64encode(imageData).decode('utf-8')
@@ -178,6 +183,7 @@ class LabelFile(object):
             imageData=imageData,
             imageHeight=imageHeight,
             imageWidth=imageWidth,
+            filters=filters,
         )
         for key, value in otherData.items():
             assert key not in data

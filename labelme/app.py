@@ -5,6 +5,7 @@ import os
 import os.path as osp
 import re
 import webbrowser
+import ast
 
 import imgviz
 from qtpy import QtCore
@@ -694,6 +695,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 filterList
             ),
         )
+
+        self.appliedFilters = ''
+
         utils.addActions(
             self.menus.view,
             (
@@ -819,20 +823,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def sharpen(self, a, b):
+        saveString = 'SHARPEN_%.1f_%.1f' % (a, b)
         adjImage = utils.sharpen(self.image_pil, self.imagePath, a, b)
         img = QtGui.QImage.fromData(adjImage)
         
         self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
         self.paintCanvas()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
+        self.appliedFilters += saveString + '|'
 
     def colorFilter(self, color, values):
+        saveString = 'COLOR_{}_{}'.format(color, values)
         filtImage = utils.adjustChannel(self.image_pil, self.imagePath, color, values)
         img = QtGui.QImage.fromData(filtImage)
         
         self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
         self.paintCanvas()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
+        self.appliedFilters += saveString + '|'
 
     def resetFilters(self):
         resetImage = utils.streamImageAsIO(self.image_pil, self.imagePath)
@@ -841,6 +849,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.loadPixmap(QtGui.QPixmap.fromImage(img))
         self.paintCanvas()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
+        self.appliedFilters = ''
 
     def menu(self, title, actions=None):
         menu = self.menuBar().addMenu(title)
@@ -1282,6 +1291,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 imageWidth=self.image.width(),
                 otherData=self.otherData,
                 flags=flags,
+                filters=self.appliedFilters,
             )
             self.labelFile = lf
             items = self.fileListWidget.findItems(
@@ -1474,6 +1484,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.labelFile.imagePath,
             )
             self.otherData = self.labelFile.otherData
+            appliedFilters = self.labelFile.appliedFilters
         else:
             self.imageData = LabelFile.load_image_file(filename)
             if self.imageData:
@@ -1529,6 +1540,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addRecentFile(self.filename)
         self.toggleActions(True)
         self.status(self.tr("Loaded %s") % osp.basename(str(filename)))
+
+        for a_filter in appliedFilters.split('|'):
+            filter_parts = a_filter.split('_')
+            if filter_parts[0] == 'COLOR':
+                color = filter_parts[1]
+                values = ast.literal_eval(filter_parts[2])
+                self.colorFilter(color, values)
+            elif filter_parts[0] == 'SHARPEN':
+                a = float(filter_parts[1])
+                b = float(filter_parts[2])
+                self.sharpen(a, b)
+                pass
         return True
 
     def resizeEvent(self, event):
